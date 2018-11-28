@@ -1,12 +1,12 @@
+import sys
+import math
+import random
+
 #
 # Each connected word represents an integer of the following layout
 # number_of_nodes
 # index_of_node index_of_ending_node_in_edge index_of_ending_node index_of_ending_node
 # ''
-import sys
-import math
-import random
-
 def random_edges(num_nodes):
     max_degree = math.floor(math.log(num_nodes))
     graph = [[] for i in range(num_nodes)]
