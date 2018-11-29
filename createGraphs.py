@@ -9,13 +9,23 @@ import random
 # ''
 def random_edges(num_nodes):
     max_degree = math.floor(math.log(num_nodes))
+    print(max_degree)
     graph = [[] for i in range(num_nodes)]
-    for i in range(num_nodes):
-        while len(graph[i]) < max_degree:
-            r = random.randint(0, num_nodes - 1)
-            if r not in graph[i]:
-                graph[i].append(r)
-                graph[r].append(i)
+    for j in range(max_degree):
+        all_nodes = set(range(num_nodes))
+        while len(all_nodes) > 0:
+            # choose a random pair of nodes
+            edge = random.sample(all_nodes, 2)
+            # if that edge already exists, try again
+            while edge[0] in graph[edge[1]]:
+                edge = random.sample(all_nodes, 2)
+                # add an edge between those nodes
+            n1 = edge[0]
+            n2 = edge[1]
+            graph[n1].append(n2)
+            graph[n2].append(n1)
+            all_nodes.remove(n1)
+            all_nodes.remove(n2)
     return graph
 
 
