@@ -29,6 +29,27 @@ def random_edges(num_nodes):
     return graph
 
 
+def read_graph_file(filename):
+    with open(filename, 'r') as file:
+        line = file.readline()
+        numnodes = int(line)
+        graph = [[] for i in range(numnodes)]
+
+        line = file.readline()
+        while len(line) > 0:
+            line_values = [int(str) for str in line.split(" ")]
+            if len(line_values) < 2 or len(line_values) > numnodes:
+                print("File incorrectly formatted")
+                return []
+
+            node_index = line_values[0]
+            edges = line_values[1:]
+            graph[node_index] = edges
+
+            line = file.readline()
+        return graph
+            
+
 def main():
     if len(sys.argv) < 3:
         print("need two command-line arguments: number of nodes, output file name")

@@ -1,4 +1,6 @@
-import createGraphs
+import create_graphs
+import test
+
 # Given a file path, read in the file
 def read_in_files():
     print("hello!")
@@ -26,10 +28,12 @@ def naive_color(list_of_lists):
 def check_naive():
     fake_graph = [[1, 2], [2,0], [0,1]]
     colors = naive_color(fake_graph)
-    print(colors)
+    print(test.check_coloring(fake_graph, colors))
+    # print(colors)
     fake_graph = [[1], [0], []]
     colors = naive_color(fake_graph)
-    print(colors)
+    print(test.check_coloring(fake_graph, colors))
+    # print(colors)
 
 if __name__ == "__main__":
     check_naive()
