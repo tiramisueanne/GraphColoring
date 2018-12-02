@@ -31,10 +31,10 @@ def main():
     text_file = sc.textFile(filename)
     nodes = text_file.map(format_text_line).filter(lambda item: item is not None).cache()
     print("Nodes RDD:")
-    nodes.foreach(print)
+    nodes.foreach(println)
     colors = nodes.map(assign_initial_color)
     print("Colors RDD:")
-    colors.foreach(print)
+    colors.foreach(println)
 
 
 if __name__ == '__main__':
