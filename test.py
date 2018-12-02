@@ -2,6 +2,9 @@ import create_graphs
 import sequential
 
 def check_coloring(graph, coloring):
+    max_degree = max([len(x) for x in graph])
+    if max_degree + 1 < len(coloring):
+        return False
     for color_set in coloring:
         for v in color_set:
             if any((u in color_set) for u in graph[v]):
