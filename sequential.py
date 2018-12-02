@@ -45,10 +45,13 @@ def kw_color(edge_lists):
         curr_start = start_indexes[i]
         next_start = start_indexes[i+1] if i + 1 != len(start_indexes) else len(start_indexes)
         color_sets.extend(naive_color(edge_lists[curr_start:next_start]))
-    # Now we change what we are
+    # Now we change to merging colors rather than individual nodes
     while(len(color_sets) > max_degree + 1):
         start_indexes = [x for x in range(len(color_sets)) if (x % (2 * (max_degree + 1)) == 0)]
         new_sets = []
+        # Essentially do the same reduction again, but this time
+        # we rid ourselves of the previous color_set  at the end of the loop
+        # because it has stale colors
         for i in range(len(start_indexes)):
             curr_start = start_indexes[i]
             next_start = start_indexes[i + 1] if i + 1 != len(start_indexes) else len(start_indexes)
