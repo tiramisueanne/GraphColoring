@@ -29,10 +29,10 @@ def combine_colors(color_sets, edge_lists, max_degree):
     # Go through the colors after max_degree + 1 colors
     for k in range(max_degree + 1, len(color_sets)):
         # Go through first deg + 1 colors to find match
-        for c in range(max_degree + 1):
-            # Need to go through each node in our current color
-            # Each node in a color can be run in parallel
-            for j in range(len(color_sets[k])):
+        for j in range(len(color_sets[k])):
+            for c in range(max_degree + 1):
+                # Need to go through each node in our current color
+                # Each node in a color can be run in parallel
                 if not any((k in color_sets[c]) for k in edge_lists[j]):
                     color_sets[c].add(j)
                     break
