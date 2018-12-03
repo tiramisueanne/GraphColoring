@@ -21,18 +21,21 @@ def naive_color(edge_lists):
             if not any((k in color_sets[c]) for k in edge_lists[j]):
                 color_sets[c].add(j)
                 break;
-
     # Each node is in a list with non-edge connected nodes
     return color_sets
 
 # Similar to naive without as much work prepping it
 def combine_colors(color_sets, edge_lists, max_degree):
-    for j in range(max_degree + 1, len(color_sets)):
-        # Do the same thing as naive, pretty much
+    # Go through the colors after max_degree + 1 colors
+    for k in range(max_degree + 1, len(color_sets)):
+        # Go through first deg + 1 colors to find match
         for c in range(max_degree + 1):
-            if not any((k in color_sets[c]) for k in edge_lists[j]):
-                color_sets[c].add(j)
-                break
+            # Need to go through each node in our current color
+            # Each node in a color can be run in parallel
+            for j in range(len(color_sets[k])):
+                if not any((k in color_sets[c]) for k in edge_lists[j]):
+                    color_sets[c].add(j)
+                    break
     # Return the first max_degree + 1 colors
     return color_sets[:max_degree + 2]
 
