@@ -22,21 +22,17 @@ def assign_initial_color(node):
     return (index, set([index]))
 
 
-def main():
-    conf, sc = setup_spark_context()
-    if len(sys.argv) < 2:
-        print("Argument missing: input file path")
-        return
-    filename = sys.argv[1]
+def create_initial_rdds(sc, filename):
     text_file = sc.textFile(filename)
     nodes = text_file.map(format_text_line).filter(lambda item: item is not None).cache()
-    print("Nodes RDD:")
-    nodes.foreach(println)
     colors = nodes.map(assign_initial_color)
-    print("Colors RDD:")
-    colors.foreach(println)
+    return nodes, colors
 
 
 if __name__ == '__main__':
-    main()
-
+    conf, sc = setup_spark_context()
+    if len(sys.argv) < 2:
+        print("Argument missing: input file path")
+        exit()
+    filename = sys.argv[1]
+    nodes, colors = create_initial_rdds(conf, sc, filename)
