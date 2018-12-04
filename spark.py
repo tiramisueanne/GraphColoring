@@ -25,7 +25,7 @@ def assign_initial_color(node):
 def create_initial_rdds(sc, filename):
     text_file = sc.textFile(filename)
     nodes = text_file.map(format_text_line).filter(lambda item: item is not None).cache()
-    colors = nodes.map(assign_initial_color)
+    colors = nodes.map(assign_initial_color).cache()
     return nodes, colors
 
 
