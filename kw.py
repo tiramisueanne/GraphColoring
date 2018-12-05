@@ -26,7 +26,6 @@ def reduce_bin(color_assignments, edges, start_color, end_color):
     # find current color_sets of colors we plan to keep
     # (color, {node1, node2, ...})
     color_sets = color_assignments.filter(lambda x: x[0] < split_color).groupByKey().map(lambda x: (x[0], set(x[1])))
-
     for c in range(split_color, end_color):
         # get an rdd of the form (node, [neighbor1, neighbor2, ...])
         # for all nodes of color c (old color to eliminate)
@@ -45,12 +44,15 @@ def reduce_bin(color_assignments, edges, start_color, end_color):
         new_assignments = valid_assignments.groupByKey()
         new_assignments = new_assignments.mapValues(min)
         # flip the pairs around (from (node, color) to (color, node))
-        new_assignments = new_assignments.map(lambda x: (x[1], x[0]))
+        new_assignments.foreach(lambda x: (x[1], x[0]))
+
+        new_assignments = color_sets.cogroup(new_assignments).flatMapValues(lambda x: set(x[0]).union(x[1]))
 
         # join this with existing color assignments rdd
         # (leave the old assignments in for now, filter them out at the end)
         color_sets = color_assignments.filter(lambda x : x[0] < split_color).cogroup(new_assignments).flatMapValues(lambda x: x).map(lambda x: (x[0], set(x[1])))
         color_assignments = color_sets.flatMapValues(lambda x: x)
+        print("Color sets: ", color_sets.collect(), "Color assign: ", color_assignments.collect())
 
     # filter the old colors out of color_assignments
     color_assignments = color_assignments.filter(lambda x: x[0] < split_color or x[0] >= end_color)
