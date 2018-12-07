@@ -10,7 +10,18 @@ def choose_node_color(color_sets, node, edges):
             return color
 
 
-# in this bin, recolor nodes of the highest_numbered color in the bin
+parallelization_threshold = 10
+
+def recolor_nodes(color_sets, nodes):
+    recolored_nodes = {}
+    if len(nodes) <= parallelization_threshold
+    for node, edges in recolor_nodes:
+        color = choose_node_color(color_sets, node, edges)
+        if color not in recolored_nodes:
+            recolored_nodes[color] = []
+        recolored_nodes[color].append((node, edges))
+
+
 def recolor_bin(bin_iter, num_colors):
     bin = list(bin_iter)
     bin.sort(key=lambda x: x[0])
@@ -39,27 +50,15 @@ def recolor_bin(bin_iter, num_colors):
     return colors_to_keep
 
 
-def keyPartitioner(key, partition_span):
-    return key // partition_span
-
-
-import spark
-def kuhn_wattenhoffer(sc):
-    nodes, _ = spark.create_initial_rdds(sc, "inputs/8.txt")
-    color_sets = nodes.map(lambda x: (x[0], [x]))
+def kuhn_wattenhoffer(nodes, final_num_colors):
     num_nodes = nodes.count()
-    num_colors = num_nodes
-    final_num_colors = int(math.log(num_nodes)) + 1
+    color_sets = nodes.map(lambda x: (x[0], [x]))
 
+    num_colors = num_nodes
     while num_colors > final_num_colors:
-        if num_colors <= final_num_colors * 2:
-            num_partitions = 1
-        else:
-            num_partitions = math.ceil(num_colors / (final_num_colors * 2))
-        partition_span = num_colors // num_partitions
         # partition into bins
-        partition_func = functools.partial(keyPartitioner, partition_span=partition_span)
-        color_sets = color_sets.partitionBy(num_partitions, partition_func)
+        num_partitions = math.ceil(num_colors / (final_num_colors * 2))
+        color_sets = color_sets.partitionBy(num_partitions)
 
         # recolor each bin
         map_func = functools.partial(recolor_bin, num_colors=final_num_colors)
@@ -67,9 +66,16 @@ def kuhn_wattenhoffer(sc):
 
         num_colors = color_sets.count()
 
-    print(color_sets.collect())
+    return color_sets.collect()
+
+
+def run_kw(sc)
+    nodes, _ = spark.create_initial_rdds(sc, "inputs/8.txt")
+    num_colors = int(math.log(nodes.count())) + 1
+    coloring = kuhn_wattenhoffer(nodes, num_colors)
+    print(coloring)
 
 
 if __name__ == "__main__":
     conf, sc = spark.setup_spark_context()
-    kuhn_wattenhoffer(sc)
+    run_kw(sc)
