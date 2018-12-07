@@ -5,7 +5,7 @@ import functools
 from multiprocessing import Pool
 
 
-def choose_node_color(color_sets, edges):
+def choose_node_color(edges, color_sets):
     for color, nodes in color_sets.items():
         if not any((k in nodes) for k in edges):
             return color
@@ -16,7 +16,7 @@ def recolor_nodes(color_sets, nodes):
     recolored_nodes = {}
     if False:#len(nodes) <= parallelization_threshold:
         for node, edges in nodes:
-            color = choose_node_color(color_sets, edges)
+            color = choose_node_color(edges, color_set)
             if color not in recolored_nodes:
                 recolored_nodes[color] = []
             recolored_nodes[color].append((node, edges))
@@ -30,12 +30,13 @@ def recolor_nodes(color_sets, nodes):
         # add results to recolored_nodes and color_sets
         color_assignments = zip(colors, nodes)
         recolored_nodes = dict(color_assignments)
-        for color, nodes in recolored_nodes:
+        for color, nodes in recolored_nodes.items():
             color_sets[color].update(node for node, edges in nodes)
     return recolored_nodes
 
 
 def recolor_bin(bin_iter, num_colors):
+
     bin = list(bin_iter)
     bin.sort(key=lambda x: x[0])
     if len(bin) <= num_colors:
