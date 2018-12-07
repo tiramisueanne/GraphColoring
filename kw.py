@@ -2,9 +2,10 @@ from pyspark import SparkContext, SparkConf
 import spark
 import math
 import functools
+from multiprocessing import Pool
 
 
-def choose_node_color(color_sets, node, edges):
+def choose_node_color(color_sets, edges):
     for color, nodes in color_sets.items():
         if not any((k in nodes) for k in edges):
             return color
@@ -13,16 +14,24 @@ parallelization_threshold = 10
 
 def recolor_nodes(color_sets, nodes):
     recolored_nodes = {}
-    if True:# len(nodes) <= parallelization_threshold:
+    if False:#len(nodes) <= parallelization_threshold:
         for node, edges in nodes:
-            color = choose_node_color(color_sets, node, edges)
+            color = choose_node_color(color_sets, edges)
             if color not in recolored_nodes:
                 recolored_nodes[color] = []
             recolored_nodes[color].append((node, edges))
             color_sets[color].add(node)
     else:
-        # parallelize this
-        pass
+        # do in parallel
+        pool = Pool(16)
+        edges = list(edges for node, edges in nodes)
+        choose_node_func = functools.partial(choose_node_color, color_sets=color_sets)
+        colors = pool.map(choose_node_func, edges)
+        # add results to recolored_nodes and color_sets
+        color_assignments = zip(colors, nodes)
+        recolored_nodes = dict(color_assignments)
+        for color, nodes in recolored_nodes:
+            color_sets[color].update(node for node, edges in nodes)
     return recolored_nodes
 
 
