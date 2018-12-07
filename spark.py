@@ -13,7 +13,7 @@ def format_text_line(line):
     if len(number_strings) < 2:
         return None
     key = int(number_strings[0])
-    edges = [int(num_str) for num_str in number_strings]
+    edges = [int(num_str) for num_str in number_strings[1:]]
     return (key, edges)
 
 

@@ -13,7 +13,7 @@ parallelization_threshold = 10
 
 def recolor_nodes(color_sets, nodes):
     recolored_nodes = {}
-    if true:# len(nodes) <= parallelization_threshold:
+    if True:# len(nodes) <= parallelization_threshold:
         for node, edges in nodes:
             color = choose_node_color(color_sets, node, edges)
             if color not in recolored_nodes:
@@ -58,7 +58,7 @@ def kuhn_wattenhoffer(nodes, final_num_colors):
         num_partitions = math.ceil(num_colors / (final_num_colors * 2))
         #SUEDO: ask if this will give us the correct number in bins,
         # or if that is at all necessary
-        color_sets = color_sets.partitionBy(num_partitions)
+        color_sets = color_sets.partitionBy(int(num_partitions))
 
         # recolor each bin
         map_func = functools.partial(recolor_bin, num_colors=final_num_colors)
