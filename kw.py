@@ -9,17 +9,16 @@ def choose_node_color(color_sets, node, edges):
         if not any((k in nodes) for k in edges):
             return color
 
-
 parallelization_threshold = 10
 
 def recolor_nodes(color_sets, nodes):
     recolored_nodes = {}
-    if len(nodes) <= parallelization_threshold
-    for node, edges in recolor_nodes:
-        color = choose_node_color(color_sets, node, edges)
-        if color not in recolored_nodes:
-            recolored_nodes[color] = []
-        recolored_nodes[color].append((node, edges))
+    if len(nodes) <= parallelization_threshold:
+        for node, edges in recolor_nodes:
+            color = choose_node_color(color_sets, node, edges)
+            if color not in recolored_nodes:
+                recolored_nodes[color] = []
+                recolored_nodes[color].append((node, edges))
 
 
 def recolor_bin(bin_iter, num_colors):
@@ -27,6 +26,7 @@ def recolor_bin(bin_iter, num_colors):
     bin.sort(key=lambda x: x[0])
     if len(bin) <= num_colors:
         return []
+    #SUEDO: is this backwards?
     colors_to_keep = bin[:num_colors]
     colors_to_recolor = bin[num_colors:]
 
@@ -40,9 +40,12 @@ def recolor_bin(bin_iter, num_colors):
         # parallelize this later
         for node, edges in recolor_nodes:
             color = choose_node_color(color_sets, node, edges)
+            # Create a new color in the recolored_nodes list
             if color not in recolored_nodes:
                 recolored_nodes[color] = []
             recolored_nodes[color].append((node, edges))
+        # For each color that we are keeping, go through and check
+        # if there was any recolored nodes to add to it
         for new_color, new_color_nodes in colors_to_keep:
             if new_color in recolored_nodes:
                 new_color_nodes.extend(recolored_nodes[color])
@@ -58,6 +61,8 @@ def kuhn_wattenhoffer(nodes, final_num_colors):
     while num_colors > final_num_colors:
         # partition into bins
         num_partitions = math.ceil(num_colors / (final_num_colors * 2))
+        #SUEDO: ask if this will give us the correct number in bins,
+        # or if that is at all necessary
         color_sets = color_sets.partitionBy(num_partitions)
 
         # recolor each bin
@@ -69,8 +74,11 @@ def kuhn_wattenhoffer(nodes, final_num_colors):
     return color_sets.collect()
 
 
-def run_kw(sc)
+# Node is a tuple of nodes index and then a list of edges
+# Then a color is the color number and a list of node tuples ( the thing above)
+def run_kw(sc):
     nodes, _ = spark.create_initial_rdds(sc, "inputs/8.txt")
+    # just to reflect how we created our sample graphs
     num_colors = int(math.log(nodes.count())) + 1
     coloring = kuhn_wattenhoffer(nodes, num_colors)
     print(coloring)
