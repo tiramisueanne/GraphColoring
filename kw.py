@@ -19,6 +19,7 @@ def recolor_nodes(color_sets, nodes):
             if color not in recolored_nodes:
                 recolored_nodes[color] = []
             recolored_nodes[color].append((node, edges))
+            color_sets[color].add(node)
     else:
         # parallelize this
         pass
@@ -84,3 +85,7 @@ def run_kw(sc):
 if __name__ == "__main__":
     conf, sc = spark.setup_spark_context()
     run_kw(sc)
+
+
+
+[(0, [(0, [7, 2]), (3, [4, 5]), (4, [3, 7]), (5, [1, 3]), (6, [2, 1])]), (1, [(1, [5, 6]), (7, [0, 4])]), (2, [(2, [6, 0])])]
