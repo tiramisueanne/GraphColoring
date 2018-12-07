@@ -13,12 +13,16 @@ parallelization_threshold = 10
 
 def recolor_nodes(color_sets, nodes):
     recolored_nodes = {}
-    if len(nodes) <= parallelization_threshold:
-        for node, edges in recolor_nodes:
+    if true:# len(nodes) <= parallelization_threshold:
+        for node, edges in nodes:
             color = choose_node_color(color_sets, node, edges)
             if color not in recolored_nodes:
                 recolored_nodes[color] = []
-                recolored_nodes[color].append((node, edges))
+            recolored_nodes[color].append((node, edges))
+    else:
+        # parallelize this
+        pass
+    return recolored_nodes
 
 
 def recolor_bin(bin_iter, num_colors):
@@ -26,7 +30,6 @@ def recolor_bin(bin_iter, num_colors):
     bin.sort(key=lambda x: x[0])
     if len(bin) <= num_colors:
         return []
-    #SUEDO: is this backwards?
     colors_to_keep = bin[:num_colors]
     colors_to_recolor = bin[num_colors:]
 
@@ -35,20 +38,12 @@ def recolor_bin(bin_iter, num_colors):
     for color, nodes in colors_to_keep:
         color_sets[color] = set(x[0] for x in nodes)
 
-    for old_color, recolor_nodes in colors_to_recolor:
-        recolored_nodes = {}
-        # parallelize this later
-        for node, edges in recolor_nodes:
-            color = choose_node_color(color_sets, node, edges)
-            # Create a new color in the recolored_nodes list
-            if color not in recolored_nodes:
-                recolored_nodes[color] = []
-            recolored_nodes[color].append((node, edges))
-        # For each color that we are keeping, go through and check
-        # if there was any recolored nodes to add to it
+    for old_color, nodes_to_recolor in colors_to_recolor:
+        recolored_nodes = recolor_nodes(color_sets, nodes_to_recolor)
+        print(recolored_nodes)
         for new_color, new_color_nodes in colors_to_keep:
             if new_color in recolored_nodes:
-                new_color_nodes.extend(recolored_nodes[color])
+                new_color_nodes.extend(recolored_nodes[new_color])
 
     return colors_to_keep
 
@@ -68,6 +63,8 @@ def kuhn_wattenhoffer(nodes, final_num_colors):
         # recolor each bin
         map_func = functools.partial(recolor_bin, num_colors=final_num_colors)
         color_sets = color_sets.mapPartitions(map_func)
+
+        print(color_sets.collect())
 
         num_colors = color_sets.count()
 
