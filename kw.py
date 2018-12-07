@@ -29,9 +29,11 @@ def recolor_nodes(color_sets, nodes):
         colors = pool.map(choose_node_func, edges)
         # add results to recolored_nodes and color_sets
         color_assignments = zip(colors, nodes)
-        recolored_nodes = dict(color_assignments)
-        for color, nodes in recolored_nodes.items():
-            color_sets[color].update(node for node, edges in nodes)
+        for color, node_tuple in color_assignments:
+            if not color in recolored_nodes:
+                recolored_nodes[color] = []
+            recolored_nodes[color].append(node_tuple)
+            color_sets[color].add(node_tuple[0])
     return recolored_nodes
 
 
@@ -51,7 +53,6 @@ def recolor_bin(bin_iter, num_colors):
 
     for old_color, nodes_to_recolor in colors_to_recolor:
         recolored_nodes = recolor_nodes(color_sets, nodes_to_recolor)
-        print(recolored_nodes)
         for new_color, new_color_nodes in colors_to_keep:
             if new_color in recolored_nodes:
                 new_color_nodes.extend(recolored_nodes[new_color])
