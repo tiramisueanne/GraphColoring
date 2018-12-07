@@ -2,8 +2,7 @@ from pyspark import SparkContext, SparkConf
 import spark
 import math
 import functools
-from multiprocessing import Pool
-
+from multiprocessing.pool import ThreadPool
 
 def choose_node_color(edges, color_sets):
     for color, nodes in color_sets.items():
@@ -23,7 +22,7 @@ def recolor_nodes(color_sets, nodes):
             color_sets[color].add(node)
     else:
         # do in parallel
-        pool = Pool(16)
+        pool = ThreadPool(processes=16)
         edges = list(edges for node, edges in nodes)
         choose_node_func = functools.partial(choose_node_color, color_sets=color_sets)
         colors = pool.map(choose_node_func, edges)
@@ -76,7 +75,6 @@ def kuhn_wattenhoffer(nodes, final_num_colors):
         map_func = functools.partial(recolor_bin, num_colors=final_num_colors)
         color_sets = color_sets.mapPartitions(map_func)
 
-        print(color_sets.collect())
 
         num_colors = color_sets.count()
 
@@ -85,12 +83,12 @@ def kuhn_wattenhoffer(nodes, final_num_colors):
 
 # Node is a tuple of nodes index and then a list of edges
 # Then a color is the color number and a list of node tuples ( the thing above)
-def run_kw(sc):
-    nodes, _ = spark.create_initial_rdds(sc, "inputs/8.txt")
+def run_kw(sc, filename):
+    nodes, _ = spark.create_initial_rdds(sc, filename)
     # just to reflect how we created our sample graphs
     num_colors = int(math.log(nodes.count())) + 1
     coloring = kuhn_wattenhoffer(nodes, num_colors)
-    print(coloring)
+    return coloring
 
 
 if __name__ == "__main__":
@@ -99,4 +97,3 @@ if __name__ == "__main__":
 
 
 
-[(0, [(0, [7, 2]), (3, [4, 5]), (4, [3, 7]), (5, [1, 3]), (6, [2, 1])]), (1, [(1, [5, 6]), (7, [0, 4])]), (2, [(2, [6, 0])])]
