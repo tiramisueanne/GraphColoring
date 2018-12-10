@@ -1,4 +1,6 @@
 import sys
+import kw
+import math
 from pyspark import SparkContext, SparkConf
 
 def setup_spark_context():
@@ -22,17 +24,31 @@ def assign_initial_color(node):
     return (index, set([index]))
 
 
-def create_initial_rdds(sc, filename):
+def create_initial_rdd(sc, filename):
     text_file = sc.textFile(filename)
     nodes = text_file.map(format_text_line).filter(lambda item: item is not None).cache()
-    colors = nodes.map(assign_initial_color).cache()
-    return nodes, colors
+    return nodes
+
+
+def main(sc, filename, num_runs):
+    nodes = create_initial_rdd(sc, filename)
+    num_colors = int(math.log(nodes.count())) + 1 # cheating cause we know this is max_degree + 1
+    for i in range(num_runs):
+        coloring = kw.kuhn_wattenhofer(nodes, num_colors)
+        if len(coloring) > num_colors:
+            print("Ahh help!")
+            break
+        print("Run " + str(i) + " complete")
 
 
 if __name__ == '__main__':
-    conf, sc = setup_spark_context()
     if len(sys.argv) < 2:
         print("Argument missing: input file path")
         exit()
     filename = sys.argv[1]
-    nodes, colors = create_initial_rdds(conf, sc, filename)
+    if len(sys.argv > 2):
+        num_runs = int(sys.argv[2])
+    else:
+        num_runs = 1
+    conf, sc = setup_spark_context()
+    main(sc, filename, num_runs)

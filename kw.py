@@ -59,7 +59,7 @@ def recolor_bin(bin_iter, num_colors):
     return colors_to_keep
 
 
-def kuhn_wattenhoffer(nodes, final_num_colors):
+def kuhn_wattenhofer(nodes, final_num_colors):
     num_nodes = nodes.count()
     color_sets = nodes.map(lambda x: (x[0], [x]))
 
@@ -84,10 +84,10 @@ def kuhn_wattenhoffer(nodes, final_num_colors):
 # Node is a tuple of nodes index and then a list of edges
 # Then a color is the color number and a list of node tuples ( the thing above)
 def run_kw(sc, filename):
-    nodes, _ = spark.create_initial_rdds(sc, filename)
+    nodes = spark.create_initial_rdd(sc, filename)
     # just to reflect how we created our sample graphs
     num_colors = int(math.log(nodes.count())) + 1
-    coloring = kuhn_wattenhoffer(nodes, num_colors)
+    coloring = kuhn_wattenhofer(nodes, num_colors)
     return coloring
 
 
