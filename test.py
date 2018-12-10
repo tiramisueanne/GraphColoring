@@ -45,7 +45,7 @@ def test_coloring_method_parallel(sc, filename, coloring_method):
 
 
 if __name__ == '__main__':
-    directory = "inputs/"
+    directory = "gs://babby-bucket/Inputs/"
     filenames = ["8.txt",
                  "32.txt",
                  "128.txt",
@@ -53,5 +53,5 @@ if __name__ == '__main__':
                  "2048.txt"]
     conf, sc = spark.setup_spark_context()
     for filename in filenames:
-        test_coloring_method(directory + filename, sequential.naive_color)
+        # test_coloring_method(directory + filename, sequential.naive_color)
         test_coloring_method_parallel(sc, directory + filename, kw.run_kw)

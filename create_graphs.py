@@ -48,7 +48,6 @@ def read_graph_file(filename):
 
             line = file.readline()
         return graph
-            
 
 def main():
     if len(sys.argv) < 3:
