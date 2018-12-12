@@ -1,5 +1,8 @@
-import create_graphs
+import create_graphs as cg
+import math
 import test
+import sys
+import time
 
 # Given a file path, read in the file
 def read_in_files():
@@ -42,11 +45,11 @@ def combine_colors(color_sets, edge_lists, max_degree):
 def kw_color(edge_lists):
     max_degree = max([len(x) for x in edge_lists])
     # This will get us all of the starting indexes of bins
-    start_indexes = [x for x in range(len(edge_lists)) if (x % (2 * (max_degree + 1)) == 0 and x + 2 * (max_degree + 1) <= len(edge_lists))]
+    start_indexes = [x for x in range(len(edge_lists)) if (x % (2 * (max_degree + 1)) == 0 and x + 2 * (max_degree + 1) < len(edge_lists))]
     color_sets = []
     for i in range(len(start_indexes)):
         curr_start = start_indexes[i]
-        next_start = start_indexes[i+1] if i + 1 != len(start_indexes) else len(start_indexes)
+        next_start = start_indexes[i+1] if i + 1 != len(start_indexes) else len(edge_lists)
         color_sets.extend(naive_color(edge_lists[curr_start:next_start]))
     # Now we change to merging colors rather than individual nodes
     while(len(color_sets) > max_degree + 1):
@@ -63,25 +66,26 @@ def kw_color(edge_lists):
         new_sets = []
     return color_sets
 
-def check_naive():
-    fake_graph = [[1, 2], [2,0], [0,1]]
-    colors = naive_color(fake_graph)
-    print(test.check_coloring(fake_graph, colors))
-    # print(colors)
-    fake_graph = [[1], [0], []]
-    colors = naive_color(fake_graph)
-    print(test.check_coloring(fake_graph, colors))
-    fake_graph = [[1], [2], [3], [0], [1], [2]]
-    colors = kw_color(fake_graph)
-    print(test.check_coloring(fake_graph, colors))
-    fake_graph = [[1], [0], []]
-    colors = kw_color(fake_graph)
-    print(test.check_coloring(fake_graph, colors))
-    fake_graph = [[1, 2], [2,0], [0,1]]
-    colors = kw_color(fake_graph)
-    print(test.check_coloring(fake_graph, colors))
+filenames=["./inputs/2048.txt", "./inputs/8192.txt", "./inputs/32768.txt", "./inputs/131072.txt"]
 
-
+def main(filename, num_runs):
+    print("Filename,time")
+    for filename in filenames:
+        start = time.time()
+        graph = cg.read_graph_file(filename)
+        for i in range(num_runs):
+            coloring = kw_color(graph)
+        end = time.time()
+        print(len(graph), ",", end - start)
 
 if __name__ == "__main__":
-    check_naive()
+    if len(sys.argv) < 2:
+        print("Argument missing: input file path")
+        exit()
+    filename = sys.argv[1]
+    if len(sys.argv) > 2:
+        num_runs = int(sys.argv[2])
+    else:
+        num_runs = 1
+    main(filename, num_runs)
+
