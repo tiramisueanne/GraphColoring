@@ -8,7 +8,6 @@ def setup_spark_context():
     sc = SparkContext(conf=conf)
     return conf, sc
 
-
 def format_text_line(line):
     # split and parse ints
     number_strings = line.split(' ')
@@ -18,17 +17,14 @@ def format_text_line(line):
     edges = [int(num_str) for num_str in number_strings[1:]]
     return (key, edges)
 
-
 def assign_initial_color(node):
     index = node[0]
     return (index, set([index]))
-
 
 def create_initial_rdd(sc, filename):
     text_file = sc.textFile(filename)
     nodes = text_file.map(format_text_line).filter(lambda item: item is not None).cache()
     return nodes
-
 
 def main(sc, filename, num_runs):
     nodes = create_initial_rdd(sc, filename)
