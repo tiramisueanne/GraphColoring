@@ -2,11 +2,9 @@ import sys
 import math
 import random
 
-#
 # Each connected word represents an integer of the following layout
 # number_of_nodes
 # index_of_node index_of_ending_node_in_edge index_of_ending_node index_of_ending_node
-# ''
 def random_edges(num_nodes):
     max_degree = math.floor(math.log(num_nodes))
     print(max_degree)
@@ -63,7 +61,6 @@ def main():
             for j in graph[i][:-1]:
                 file.write(str(j) + " ")
             file.write(str(graph[i][-1]) + "\n")
-
 
 if __name__ == "__main__":
     main()
