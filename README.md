@@ -1,5 +1,5 @@
 # GraphColoring
-Final Project for Concurrency.
+Implementation of Kuhn-Wattenhofer's Algorithm for distributed graph coloring using Spark and Cloud Dataproc. Used as a final project for Concurrency (cs378h).
 
 ### Python Files
 * create_graphs.py - code to generate random graph inputs, save them to a file, and read them back from a file
